@@ -1,0 +1,13 @@
+android {
+    namespace = 'kz.qbox.call.sdk'
+
+    defaultConfig {
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+}
+
+dependencies {
+    api(libs.okhttp)
+    api(libs.okhttp.logging.interceptor)
+    api(libs.webrtc)
+}

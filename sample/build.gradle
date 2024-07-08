@@ -1,0 +1,61 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+}
+
+android {
+    namespace = 'kz.qbox.call.sdk.sample'
+
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'kz.qbox.call.sdk.sample'
+
+        minSdk 24
+        targetSdk 34
+
+        versionCode project.ext.version_code
+        versionName version
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    buildFeatures {
+        buildConfig true
+        compose = true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.14"
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17.toString()
+    }
+}
+
+dependencies {
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
+    implementation(libs.accompanist.permissions)
+    implementation(libs.audioswitch)
+    implementation(project(":sdk"))
+}
