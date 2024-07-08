@@ -23,11 +23,9 @@ class CallManager(
         private const val TAG = "CallManager"
     }
 
-    fun init() {
-        QBoxSDK.setLoggingEnabled(true)
-
+    fun init(token: String) {
         executorService.execute {
-            val isConnectedToWebSocket = connectToWebSocket()
+            val isConnectedToWebSocket = connectToWebSocket(token)
             Log.d(TAG, "init() -> isConnectedToWebSocket: $isConnectedToWebSocket")
         }
     }
@@ -71,11 +69,17 @@ class CallManager(
             )
         )
 
-    private fun connectToWebSocket(): Boolean =
-        WebSocketClient.connect(
-            url = "wss://dial.vlx.kz/websocket",
+    private fun connectToWebSocket(token: String): Boolean {
+        val url = QBoxSDK.getWebSocketUrl()
+        if (url.isNullOrBlank()) {
+            throw IllegalStateException("WebSocket URL is null or blank!")
+        }
+        return WebSocketClient.connect(
+            url = url,
+            token = token,
             listener = this
         )
+    }
 
     private fun sendLocalSessionDescription(sessionDescription: SessionDescription): Boolean =
         WebSocketClient.sendMessage(

@@ -2,25 +2,27 @@ package kz.qbox.call.sdk.socket
 
 import android.util.Log
 import kz.qbox.call.sdk.safeShutdown
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
-import okhttp3.logging.HttpLoggingInterceptor
 import okio.ByteString
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 const val TAG = "WebSocketClient"
 
 object WebSocketClient : WebSocketListener() {
 
-    private val httpClient by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { createHttpClient() }
+    private val httpClient by lazy(LazyThreadSafetyMode.NONE) {
+        OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .build()
+    }
 
     private var webSocketClient: WebSocket? = null
 
@@ -35,26 +37,10 @@ object WebSocketClient : WebSocketListener() {
 
     private var listener: Listener? = null
 
-    private fun createHttpClient(): OkHttpClient {
-        return OkHttpClient.Builder()
-            .readTimeout(10, TimeUnit.SECONDS)
-            .addInterceptor(
-                HttpLoggingInterceptor().apply {
-                    setLevel(HttpLoggingInterceptor.Level.NONE)
-                }
-            )
-            .build()
-    }
-
-    fun connect(url: String, token: String? = null, listener: Listener): Boolean {
+    fun connect(url: String, token: String, listener: Listener): Boolean {
         WebSocketClient.listener = listener
 
-        return if (token.isNullOrBlank()) {
-            val generatedToken = getToken() ?: return false
-            createWebSocketClient(url = url, token = generatedToken)
-        } else {
-            createWebSocketClient(url = url, token = token)
-        }
+        return createWebSocketClient(url = url, token = token)
     }
 
     fun disconnect() {
@@ -84,32 +70,6 @@ object WebSocketClient : WebSocketListener() {
 
     fun removeListeners() {
         listener = null
-    }
-
-    private fun getToken(): String? {
-        val response = httpClient.newCall(
-            Request.Builder()
-                .url("https://dial.vlx.kz/api/generate")
-                .method(
-                    "POST",
-                    JSONObject(
-                        mapOf(
-                            "caller" to "87782812817",
-                            "dest" to "777"
-                        )
-                    ).toString().toRequestBody("application/json".toMediaTypeOrNull())
-                )
-                .build()
-        ).execute()
-
-        if (response.isSuccessful) {
-            val body = response.body ?: throw IOException("Unexpected body")
-            val bodyString = body.string()
-            val json = JSONObject(bodyString)
-            return json.getString("token")
-        }
-
-        return null
     }
 
     private fun createWebSocketClient(url: String, token: String): Boolean {
