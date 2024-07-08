@@ -41,19 +41,15 @@ class SampleViewModel(
             )
         }
 
-        audioSwitch.availableAudioDevices.forEach {
-            if (it is AudioDevice.Speakerphone) {
-                audioSwitch.selectDevice(it)
-            }
-        }
-
-        audioSwitch.activate()
-
         callManager.init()
     }
 
-    fun onCall(): Boolean =
-        callManager.onCall()
+    fun getAudioOutputDevices(): List<AudioDevice> = audioSwitch.availableAudioDevices
+
+    fun onAudioOutputDeviceSelect(audioDevice: AudioDevice): Boolean {
+        audioSwitch.selectDevice(audioDevice)
+        return true
+    }
 
     fun onMute(): Boolean =
         callManager.onMute()

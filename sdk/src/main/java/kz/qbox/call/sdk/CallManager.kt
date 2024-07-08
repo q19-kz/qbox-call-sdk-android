@@ -44,16 +44,6 @@ class CallManager(
         WebSocketClient.removeListeners()
     }
 
-    fun onCall(): Boolean {
-        executorService.execute {
-            Log.d(TAG, "onCall() -> webSocketState: ${WebSocketClient.webSocketState}")
-            val isConnectedToWebSocket = connectToWebSocket()
-            Log.d(TAG, "onCall() -> isConnectedToWebSocket: $isConnectedToWebSocket")
-        }
-
-        return true
-    }
-
     fun onMute(): Boolean =
         peerConnectionClient.setLocalAudioEnabled(false)
 
@@ -154,9 +144,9 @@ class CallManager(
 
             peerConnectionClient.createOffer()
 
-            audioManager?.mode = AudioManager.MODE_IN_COMMUNICATION
-            audioManager?.isBluetoothScoOn = false
-            audioManager?.isSpeakerphoneOn = true
+//            audioManager?.mode = AudioManager.MODE_IN_COMMUNICATION
+//            audioManager?.isBluetoothScoOn = false
+//            audioManager?.isSpeakerphoneOn = true
         }
     }
 

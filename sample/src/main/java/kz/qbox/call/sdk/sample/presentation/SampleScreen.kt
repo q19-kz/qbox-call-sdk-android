@@ -1,5 +1,6 @@
 package kz.qbox.call.sdk.sample.presentation
 
+import android.Manifest
 import android.content.Context
 import android.media.AudioManager
 import android.util.Log
@@ -10,14 +11,24 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.material3.AlertDialogDefaults
+import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -33,6 +44,7 @@ import kz.qbox.call.sdk.webrtc.PeerConnectionClient
 
 const val TAG = "SampleScreen"
 
+@ExperimentalMaterial3Api
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun SampleScreen(
@@ -63,19 +75,48 @@ fun SampleScreen(
         )
     }
 ) {
-    val accessNetworkStatePermissionsState = rememberPermissionState(
-        android.Manifest.permission.ACCESS_NETWORK_STATE
-    )
+    val uiState by viewModel.uiState.collectAsState()
 
     val modifyAudioSettingsPermissionState = rememberPermissionState(
-        android.Manifest.permission.MODIFY_AUDIO_SETTINGS
+        Manifest.permission.MODIFY_AUDIO_SETTINGS
     )
 
     val recordAudioPermissionState = rememberPermissionState(
-        android.Manifest.permission.RECORD_AUDIO
+        Manifest.permission.RECORD_AUDIO
     )
 
-    val uiState by viewModel.uiState.collectAsState()
+    var isAudioOutputSelectDialogVisible by remember { mutableStateOf(false) }
+
+    if (isAudioOutputSelectDialogVisible) {
+        val audioDevices = viewModel.getAudioOutputDevices()
+
+        BasicAlertDialog(
+            onDismissRequest = {
+                isAudioOutputSelectDialogVisible = false
+            }
+        ) {
+            Surface(
+                modifier = Modifier.wrapContentWidth().wrapContentHeight(),
+                shape = MaterialTheme.shapes.large,
+                tonalElevation = AlertDialogDefaults.TonalElevation
+            ) {
+                Column(modifier = Modifier.padding(15.dp)) {
+                    LazyColumn {
+                        items(audioDevices.size) {
+                            TextButton(
+                                onClick = {
+                                    viewModel.onAudioOutputDeviceSelect(audioDevices[it])
+                                    isAudioOutputSelectDialogVisible = false
+                                }
+                            ) {
+                                Text(text = audioDevices[it].name)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     Scaffold { contentPadding ->
         Column(
@@ -85,6 +126,9 @@ fun SampleScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Row {
+                Text("Permissions: ${listOf(modifyAudioSettingsPermissionState, recordAudioPermissionState).all { it.status.isGranted }}")
+            }
             Row {
                 Text("WebSocket: ${uiState.webSocketState}")
             }
@@ -115,17 +159,6 @@ fun SampleScreen(
             Row {
                 TextButton(
                     onClick = {
-                        viewModel.onHangup()
-                    }
-                ) {
-                    Text("Hangup")
-                }
-                TextButton(
-                    onClick = {
-                        if (!accessNetworkStatePermissionsState.status.isGranted) {
-                            accessNetworkStatePermissionsState.launchPermissionRequest()
-                        }
-
                         if (!modifyAudioSettingsPermissionState.status.isGranted) {
                             modifyAudioSettingsPermissionState.launchPermissionRequest()
                         }
@@ -133,11 +166,18 @@ fun SampleScreen(
                         if (!recordAudioPermissionState.status.isGranted) {
                             recordAudioPermissionState.launchPermissionRequest()
                         }
-
-                        viewModel.onCall()
                     }
                 ) {
-                    Text("Call")
+                    Text(text = "Request permissions")
+                }
+            }
+            Row {
+                TextButton(
+                    onClick = {
+                        isAudioOutputSelectDialogVisible = !isAudioOutputSelectDialogVisible
+                    }
+                ) {
+                    Text(text = "Audio output")
                 }
             }
             Row {
@@ -154,6 +194,15 @@ fun SampleScreen(
                     }
                 ) {
                     Text("Unmute")
+                }
+            }
+            Row {
+                TextButton(
+                    onClick = {
+                        viewModel.onHangup()
+                    }
+                ) {
+                    Text("Hangup")
                 }
             }
         }
