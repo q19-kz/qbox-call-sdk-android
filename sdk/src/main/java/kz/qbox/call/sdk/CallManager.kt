@@ -1,6 +1,5 @@
 package kz.qbox.call.sdk
 
-import android.media.AudioManager
 import android.util.Log
 import kz.qbox.call.sdk.socket.WebSocketClient
 import kz.qbox.call.sdk.socket.WebSocketState
@@ -15,7 +14,6 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 class CallManager(
-    private val audioManager: AudioManager?,
     private val peerConnectionClient: PeerConnectionClient,
     private val executorService: ExecutorService = Executors.newSingleThreadExecutor(),
     var listener: Listener? = null
@@ -143,10 +141,6 @@ class CallManager(
             )
 
             peerConnectionClient.createOffer()
-
-//            audioManager?.mode = AudioManager.MODE_IN_COMMUNICATION
-//            audioManager?.isBluetoothScoOn = false
-//            audioManager?.isSpeakerphoneOn = true
         }
     }
 

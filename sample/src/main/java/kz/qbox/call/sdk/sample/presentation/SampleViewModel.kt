@@ -1,6 +1,5 @@
 package kz.qbox.call.sdk.sample.presentation
 
-import android.media.AudioManager
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.twilio.audioswitch.AudioDevice
@@ -16,7 +15,6 @@ import org.webrtc.PeerConnection
 
 class SampleViewModel(
     private val audioSwitch: AudioSwitch,
-    audioManager: AudioManager?,
     peerConnectionClient: PeerConnectionClient
 ) : ViewModel(), CallManager.Listener {
 
@@ -28,7 +26,6 @@ class SampleViewModel(
     val uiState: StateFlow<SampleUIState> = _uiState.asStateFlow()
 
     private val callManager = CallManager(
-        audioManager = audioManager,
         peerConnectionClient = peerConnectionClient,
         listener = this
     )
@@ -39,23 +36,36 @@ class SampleViewModel(
                 TAG, "audioSwitch.start() -> " +
                         "audioDevices: $audioDevices, selectedAudioDevice: $selectedAudioDevice"
             )
+
+            _uiState.value = _uiState.value.copy(audioDevice = selectedAudioDevice)
         }
 
         callManager.init()
     }
 
-    fun getAudioOutputDevices(): List<AudioDevice> = audioSwitch.availableAudioDevices
+    fun getAudioOutputDevices(): List<AudioDevice> =
+        audioSwitch.availableAudioDevices
 
-    fun onAudioOutputDeviceSelect(audioDevice: AudioDevice): Boolean {
+    fun onAudioOutputDeviceSelected(audioDevice: AudioDevice) =
         audioSwitch.selectDevice(audioDevice)
-        return true
+
+    fun onMute(): Boolean {
+        return if (callManager.onMute()) {
+            _uiState.value = _uiState.value.copy(isMuted = true)
+            true
+        } else {
+            false
+        }
     }
 
-    fun onMute(): Boolean =
-        callManager.onMute()
-
-    fun onUnmute(): Boolean =
-        callManager.onUnmute()
+    fun onUnmute(): Boolean {
+        return if (callManager.onUnmute()) {
+            _uiState.value = _uiState.value.copy(isMuted = false)
+            true
+        } else {
+            false
+        }
+    }
 
     fun onDTMFButtonPressed(symbol: String): Boolean =
         callManager.onDTMFButtonPressed(symbol)

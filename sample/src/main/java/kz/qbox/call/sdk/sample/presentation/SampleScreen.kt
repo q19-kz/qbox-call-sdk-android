@@ -2,7 +2,6 @@ package kz.qbox.call.sdk.sample.presentation
 
 import android.Manifest
 import android.content.Context
-import android.media.AudioManager
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,7 +31,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.core.content.getSystemService
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -51,7 +49,6 @@ fun SampleScreen(
     context: Context,
     viewModel: SampleViewModel = viewModel {
         SampleViewModel(
-            audioManager = context.getSystemService<AudioManager>(),
             audioSwitch = AudioSwitch(
                 context = context,
                 loggingEnabled = true,
@@ -105,7 +102,7 @@ fun SampleScreen(
                         items(audioDevices.size) {
                             TextButton(
                                 onClick = {
-                                    viewModel.onAudioOutputDeviceSelect(audioDevices[it])
+                                    viewModel.onAudioOutputDeviceSelected(audioDevices[it])
                                     isAudioOutputSelectDialogVisible = false
                                 }
                             ) {
@@ -128,6 +125,12 @@ fun SampleScreen(
         ) {
             Row {
                 Text("Permissions: ${listOf(modifyAudioSettingsPermissionState, recordAudioPermissionState).all { it.status.isGranted }}")
+            }
+            Row {
+                Text("Audio input: ${uiState.isMuted}")
+            }
+            Row {
+                Text("Audio output: ${uiState.audioDevice?.name}")
             }
             Row {
                 Text("WebSocket: ${uiState.webSocketState}")

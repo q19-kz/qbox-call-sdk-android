@@ -329,15 +329,12 @@ class PeerConnectionClient private constructor(
     }
 
     fun setLocalAudioEnabled(isEnabled: Boolean): Boolean {
-        return localMediaStream?.audioTracks?.map {
-            it.setEnabled(isEnabled)
-        }?.all { it } == true
+        return localAudioTrack?.setEnabled(isEnabled) == true
     }
 
-    fun setRemoteAudioEnabled(isEnabled: Boolean): Boolean =
-        executor.submit(Callable {
-            remoteAudioTrack?.setEnabled(isEnabled)
-        }).get() == true
+    fun setRemoteAudioEnabled(isEnabled: Boolean): Boolean {
+        return remoteAudioTrack?.setEnabled(isEnabled) == true
+    }
 
     fun addStream(mediaStream: MediaStream): Boolean =
         peerConnection?.addStream(mediaStream) == true
