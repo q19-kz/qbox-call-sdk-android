@@ -59,7 +59,7 @@ subprojects { Project project ->
         compileSdk 34
 
         defaultConfig {
-            minSdk 24
+            minSdk 21
             targetSdk 34
 
             versionCode project.ext.version_code
