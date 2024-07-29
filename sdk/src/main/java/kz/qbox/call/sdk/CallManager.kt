@@ -8,6 +8,7 @@ import org.json.JSONObject
 import org.webrtc.IceCandidate
 import org.webrtc.MediaStreamTrack
 import org.webrtc.PeerConnection
+import org.webrtc.PeerConnection.IceServer
 import org.webrtc.RtpTransceiver
 import org.webrtc.SessionDescription
 import java.util.concurrent.ExecutorService
@@ -16,6 +17,10 @@ import java.util.concurrent.Executors
 class CallManager(
     private val peerConnectionClient: PeerConnectionClient,
     private val executorService: ExecutorService = Executors.newSingleThreadExecutor(),
+    private val iceServers: List<IceServer> = listOf(
+        IceServer.builder("stun:stun.l.google.com:19302")
+            .createIceServer(),
+    ),
     var listener: Listener? = null
 ) : WebSocketClient.Listener, PeerConnectionClient.Listener {
 
@@ -123,14 +128,7 @@ class CallManager(
 
         if (state == WebSocketState.Open) {
             peerConnectionClient.createPeerConnection(
-                iceServers = listOf(
-                    PeerConnection.IceServer.builder("stun:stun.l.google.com:19302")
-                        .createIceServer(),
-                    PeerConnection.IceServer.builder("turn:195.12.123.27:3478?transport=udp")
-                        .setUsername("test")
-                        .setPassword("test")
-                        .createIceServer()
-                ),
+                iceServers = iceServers,
                 listener = this
             )
 

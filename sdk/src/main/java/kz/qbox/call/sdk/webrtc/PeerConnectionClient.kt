@@ -368,6 +368,7 @@ class PeerConnectionClient private constructor(
         listener = null
     }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     fun reset() {
         iceServers = null
 
@@ -378,12 +379,17 @@ class PeerConnectionClient private constructor(
     fun close() {
         reset()
 
-        safeShutdown(
-            name = "peerConnection",
-            action = {
-                peerConnection?.close()
-            }
-        )
+        if (peerConnection == null) {
+            Logger.warn(TAG, "close() -> [Already closed]")
+        } else {
+            safeShutdown(
+                name = "peerConnection",
+                action = {
+                    peerConnection?.close()
+                    true
+                }
+            )
+        }
     }
 
     fun dispose(): Boolean {
@@ -393,6 +399,7 @@ class PeerConnectionClient private constructor(
             name = "audioDeviceModule",
             action = {
                 audioDeviceModule?.release()
+                true
             },
             onComplete = {
                 audioDeviceModule = null
@@ -403,6 +410,7 @@ class PeerConnectionClient private constructor(
             name = "localAudioSource",
             action = {
                 localAudioSource?.dispose()
+                true
             },
             onComplete = {
                 localAudioSource = null
@@ -413,6 +421,7 @@ class PeerConnectionClient private constructor(
             name = "localAudioTrack",
             action = {
                 localAudioTrack?.dispose()
+                true
             },
             onComplete = {
                 localAudioTrack = null
@@ -423,6 +432,7 @@ class PeerConnectionClient private constructor(
             name = "remoteAudioTrack",
             action = {
                 remoteAudioTrack?.dispose()
+                true
             },
             onComplete = {
                 remoteAudioTrack = null
@@ -433,6 +443,7 @@ class PeerConnectionClient private constructor(
             name = "localMediaStream",
             action = {
                 localMediaStream?.dispose()
+                true
             },
             onComplete = {
                 localMediaStream = null
@@ -443,6 +454,7 @@ class PeerConnectionClient private constructor(
             name = "peerConnection",
             action = {
                 peerConnection?.dispose()
+                true
             },
             onComplete = {
                 peerConnection = null
@@ -453,6 +465,7 @@ class PeerConnectionClient private constructor(
             name = "peerConnectionFactory",
             action = {
                 peerConnectionFactory?.dispose()
+                true
             },
             onComplete = {
                 peerConnectionFactory = null

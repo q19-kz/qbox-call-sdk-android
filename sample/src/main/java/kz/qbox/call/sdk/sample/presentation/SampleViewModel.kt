@@ -151,6 +151,7 @@ class SampleViewModel(
      */
 
     override fun onCallEvent(event: CallEvent) {
+        Log.d(TAG, "onCallEvent() -> event: $event")
         _uiState.value = _uiState.value.copy(callEvent = event.toString())
     }
 

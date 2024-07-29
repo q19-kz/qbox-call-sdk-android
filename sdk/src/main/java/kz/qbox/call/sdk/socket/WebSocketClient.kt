@@ -1,6 +1,7 @@
 package kz.qbox.call.sdk.socket
 
 import android.util.Log
+import kz.qbox.call.sdk.logging.Logger
 import kz.qbox.call.sdk.safeShutdown
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -32,6 +33,7 @@ object WebSocketClient : WebSocketListener() {
             listener?.onWebSocketStateChange(value)
         }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     val webSocketState: WebSocketState
         get() = _webSocketState
 
@@ -43,16 +45,21 @@ object WebSocketClient : WebSocketListener() {
         return createWebSocketClient(url = url, token = token)
     }
 
-    fun disconnect() {
-        safeShutdown(
-            name = "webSocketClient",
-            action = {
-                webSocketClient?.close(4996, "disconnect")
-            },
-            onComplete = {
-                webSocketClient = null
-            }
-        )
+    fun disconnect(): Boolean {
+        return if (webSocketClient == null) {
+            Logger.warn(TAG, "disconnect() -> [Already disconnected]")
+            false
+        } else {
+            safeShutdown(
+                name = "webSocketClient",
+                action = {
+                    webSocketClient?.close(4996, "disconnect") == true
+                },
+                onComplete = {
+                    webSocketClient = null
+                }
+            )
+        }
     }
 
     fun sendMessage(message: JSONObject): Boolean {
@@ -82,6 +89,7 @@ object WebSocketClient : WebSocketListener() {
                     name = "webSocketClient",
                     action = {
                         webSocketClient?.cancel()
+                        true
                     },
                     onComplete = {
                         webSocketClient = null
