@@ -100,7 +100,7 @@ class SampleViewModel(
 
     fun onUnmute(): Boolean {
         audioManager?.isMicrophoneMute = false
-        return if (audioManager?.isMicrophoneMute == true) {
+        return if (audioManager?.isMicrophoneMute == false) {
             _uiState.value = _uiState.value.copy(isMuted = false)
             true
         } else {
