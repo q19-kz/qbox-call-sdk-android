@@ -178,6 +178,8 @@ class SampleViewModel(
     override fun onCleared() {
         super.onCleared()
 
+        audioManager?.isMicrophoneMute = false
+
         callManager.onDestroy()
 
         httpClient.dispatcher.executorService.shutdown()
