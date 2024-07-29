@@ -45,9 +45,11 @@ class CallManager(
         WebSocketClient.removeListeners()
     }
 
+    @Deprecated("Use android.media.AudioManager#isMicrophoneMute")
     fun onMute(): Boolean =
         peerConnectionClient.setLocalAudioEnabled(false)
 
+    @Deprecated("Use android.media.AudioManager#isMicrophoneMute")
     fun onUnmute(): Boolean =
         peerConnectionClient.setLocalAudioEnabled(true)
 

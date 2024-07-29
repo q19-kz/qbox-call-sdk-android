@@ -1,5 +1,6 @@
 package kz.qbox.call.sdk.sample.presentation
 
+import android.media.AudioManager
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.twilio.audioswitch.AudioDevice
@@ -26,6 +27,7 @@ import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 class SampleViewModel(
+    private val audioManager: AudioManager?,
     private val audioSwitch: AudioSwitch,
     peerConnectionClient: PeerConnectionClient
 ) : ViewModel(), CallManager.Listener {
@@ -87,7 +89,8 @@ class SampleViewModel(
         audioSwitch.selectDevice(audioDevice)
 
     fun onMute(): Boolean {
-        return if (callManager.onMute()) {
+        audioManager?.isMicrophoneMute = true
+        return if (audioManager?.isMicrophoneMute == true) {
             _uiState.value = _uiState.value.copy(isMuted = true)
             true
         } else {
@@ -96,7 +99,8 @@ class SampleViewModel(
     }
 
     fun onUnmute(): Boolean {
-        return if (callManager.onUnmute()) {
+        audioManager?.isMicrophoneMute = false
+        return if (audioManager?.isMicrophoneMute == true) {
             _uiState.value = _uiState.value.copy(isMuted = false)
             true
         } else {
