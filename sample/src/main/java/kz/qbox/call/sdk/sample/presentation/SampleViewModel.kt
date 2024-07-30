@@ -34,6 +34,11 @@ class SampleViewModel(
 
     companion object {
         private const val TAG = "SampleViewModel"
+
+        private const val BASE_URL = "dial.vlx.kz"
+
+        private const val CALLER = "87007654321"
+        private const val DESTINATION = "777"
     }
 
     private val _uiState = MutableStateFlow(SampleUIState())
@@ -60,7 +65,7 @@ class SampleViewModel(
     init {
         QBoxSDK.init(
             isLoggingEnabled = true,
-            webSocketUrl = "wss://dial.vlx.kz/websocket"
+            webSocketUrl = "wss://${BASE_URL}/websocket"
         )
 
         audioSwitch.start { audioDevices, selectedAudioDevice ->
@@ -120,13 +125,13 @@ class SampleViewModel(
     ) {
         httpClient.newCall(
             Request.Builder()
-                .url("https://dial.vlx.kz/api/generate")
+                .url("https://${BASE_URL}/api/generate")
                 .method(
                     "POST",
                     JSONObject(
                         mapOf(
-                            "caller" to "87782812817",
-                            "dest" to "777"
+                            "caller" to CALLER,
+                            "dest" to DESTINATION
                         )
                     ).toString().toRequestBody("application/json".toMediaTypeOrNull())
                 )

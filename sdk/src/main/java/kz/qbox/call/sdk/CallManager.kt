@@ -29,6 +29,7 @@ class CallManager(
     }
 
     fun init(token: String) {
+        Logger.debug(TAG, "init() -> token: $token")
         executorService.execute {
             val isWebSocketRequested = connectToWebSocket(token)
             Logger.debug(TAG, "init() -> isWebSocketRequested: $isWebSocketRequested")
@@ -91,6 +92,7 @@ class CallManager(
         )
 
     private fun connectToWebSocket(token: String): Boolean {
+        Logger.debug(TAG, "connectToWebSocket() -> token: $token")
         val url = QBoxSDK.getWebSocketUrl()
         if (url.isNullOrBlank()) {
             throw IllegalStateException("WebSocket URL is null or blank!")
@@ -140,6 +142,8 @@ class CallManager(
      */
 
     override fun onWebSocketStateChange(state: WebSocketState) {
+        Logger.debug(TAG, "onWebSocketStateChange() -> state: $state")
+
         listener?.onWebSocketStateChange(state)
 
         if (state == WebSocketState.Open) {
@@ -215,6 +219,7 @@ class CallManager(
     }
 
     override fun onPeerConnectionStateChange(peerConnectionState: PeerConnection.PeerConnectionState?) {
+        Logger.debug(TAG, "onPeerConnectionStateChange() -> peerConnectionState: $peerConnectionState")
         listener?.onWebRTCPeerConnectionChange(peerConnectionState)
     }
 
