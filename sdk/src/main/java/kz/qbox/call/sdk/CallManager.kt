@@ -155,12 +155,12 @@ class CallManager(
             val isLocalMediaStreamCreated = peerConnectionClient.createLocalMediaStream()
             Logger.debug(TAG, "isLocalMediaStreamCreated: $isLocalMediaStreamCreated")
 
-            peerConnectionClient.addTransceiver(
-                MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO,
-                RtpTransceiver.RtpTransceiverInit(
-                    RtpTransceiver.RtpTransceiverDirection.RECV_ONLY
-                )
-            )
+//            peerConnectionClient.addTransceiver(
+//                MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO,
+//                RtpTransceiver.RtpTransceiverInit(
+//                    RtpTransceiver.RtpTransceiverDirection.RECV_ONLY
+//                )
+//            )
 
             peerConnectionClient.createOffer()
         }
