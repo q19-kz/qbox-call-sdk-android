@@ -28,8 +28,8 @@ ext.projectArtifactId = { Project project ->
 
 allprojects {
     group = 'kz.qbox.call.sdk'
-    project.ext.version_code = 4
-    version = '1.0.3'
+    project.ext.version_code = 5
+    version = '1.0.4'
     project.ext.artifactId = rootProject.ext.projectArtifactId(project)
 
     if (project.group != null) {
