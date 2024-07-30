@@ -395,82 +395,96 @@ class PeerConnectionClient private constructor(
     fun dispose(): Boolean {
         reset()
 
-        safeShutdown(
-            name = "audioDeviceModule",
-            action = {
-                audioDeviceModule?.release()
-                true
-            },
-            onComplete = {
-                audioDeviceModule = null
-            }
-        )
+        if (audioDeviceModule != null) {
+            safeShutdown(
+                name = "audioDeviceModule",
+                action = {
+                    audioDeviceModule?.release()
+                    true
+                },
+                onComplete = {
+                    audioDeviceModule = null
+                }
+            )
+        }
 
-        safeShutdown(
-            name = "localAudioSource",
-            action = {
-                localAudioSource?.dispose()
-                true
-            },
-            onComplete = {
-                localAudioSource = null
-            }
-        )
+        if (localAudioSource != null) {
+            safeShutdown(
+                name = "localAudioSource",
+                action = {
+                    localAudioSource?.dispose()
+                    true
+                },
+                onComplete = {
+                    localAudioSource = null
+                }
+            )
+        }
 
-        safeShutdown(
-            name = "localAudioTrack",
-            action = {
-                localAudioTrack?.dispose()
-                true
-            },
-            onComplete = {
-                localAudioTrack = null
-            }
-        )
+        if (localAudioTrack != null) {
+            safeShutdown(
+                name = "localAudioTrack",
+                action = {
+                    localAudioTrack?.dispose()
+                    true
+                },
+                onComplete = {
+                    localAudioTrack = null
+                }
+            )
+        }
 
-        safeShutdown(
-            name = "remoteAudioTrack",
-            action = {
-                remoteAudioTrack?.dispose()
-                true
-            },
-            onComplete = {
-                remoteAudioTrack = null
-            }
-        )
+        if (remoteAudioTrack != null) {
+            safeShutdown(
+                name = "remoteAudioTrack",
+                action = {
+                    remoteAudioTrack?.dispose()
+                    true
+                },
+                onComplete = {
+                    remoteAudioTrack = null
+                }
+            )
+        }
 
-        safeShutdown(
-            name = "localMediaStream",
-            action = {
-                localMediaStream?.dispose()
-                true
-            },
-            onComplete = {
-                localMediaStream = null
-            }
-        )
+        if (localMediaStream != null) {
+            safeShutdown(
+                name = "localMediaStream",
+                action = {
+                    localMediaStream?.dispose()
+                    true
+                },
+                onComplete = {
+                    localMediaStream = null
+                }
+            )
+        }
 
-        safeShutdown(
-            name = "peerConnection",
-            action = {
-                peerConnection?.dispose()
-                true
-            },
-            onComplete = {
-                peerConnection = null
-            }
-        )
+        if (peerConnection != null) {
+            safeShutdown(
+                name = "peerConnection",
+                action = {
+                    peerConnection?.dispose()
+                    true
+                },
+                onComplete = {
+                    peerConnection = null
+                }
+            )
+        }
 
-        safeShutdown(
-            name = "peerConnectionFactory",
-            action = {
-                peerConnectionFactory?.dispose()
-                true
-            },
-            onComplete = {
-                peerConnectionFactory = null
-            }
-        )
+        if (peerConnectionFactory != null) {
+            safeShutdown(
+                name = "peerConnectionFactory",
+                action = {
+                    peerConnectionFactory?.dispose()
+                    true
+                },
+                onComplete = {
+                    peerConnectionFactory = null
+                }
+            )
+        }
 
         return true
     }

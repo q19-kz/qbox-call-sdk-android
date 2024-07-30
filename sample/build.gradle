@@ -67,4 +67,6 @@ dependencies {
     implementation(libs.okhttp.logging.interceptor)
 
     implementation(project(":sdk"))
+
+    debugImplementation(libs.leakcanary.android)
 }

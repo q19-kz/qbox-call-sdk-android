@@ -1,9 +1,9 @@
 package kz.qbox.call.sdk
 
-import android.util.Log
+import kz.qbox.call.sdk.logging.Logger
 
 fun safeShutdown(name: String, action: () -> Boolean, onComplete: () -> Unit = {}): Boolean {
-    Log.d("SafeShutdown", "[BEFORE] safeShutdown() -> name: $name")
+    Logger.debug("SafeShutdown", "[BEFORE] safeShutdown() -> name: $name")
     var ok = false
     try {
         ok = action.invoke()
@@ -12,6 +12,6 @@ fun safeShutdown(name: String, action: () -> Boolean, onComplete: () -> Unit = {
     } finally {
         onComplete.invoke()
     }
-    Log.d("SafeShutdown", "[AFTER] safeShutdown() -> name: $name")
+    Logger.debug("SafeShutdown", "[AFTER] safeShutdown() -> name: $name")
     return ok
 }

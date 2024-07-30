@@ -1,6 +1,6 @@
 package kz.qbox.call.sdk
 
-import android.util.Log
+import kz.qbox.call.sdk.logging.Logger
 import kz.qbox.call.sdk.socket.WebSocketClient
 import kz.qbox.call.sdk.socket.WebSocketState
 import kz.qbox.call.sdk.webrtc.PeerConnectionClient
@@ -30,12 +30,14 @@ class CallManager(
 
     fun init(token: String) {
         executorService.execute {
-            val isConnectedToWebSocket = connectToWebSocket(token)
-            Log.d(TAG, "init() -> isConnectedToWebSocket: $isConnectedToWebSocket")
+            val isWebSocketRequested = connectToWebSocket(token)
+            Logger.debug(TAG, "init() -> isWebSocketRequested: $isWebSocketRequested")
         }
     }
 
     fun onDestroy() {
+        Logger.debug(TAG, "onDestroy()")
+
         peerConnectionClient.dispose()
         peerConnectionClient.shutdown()
         peerConnectionClient.removeListeners()
@@ -45,11 +47,23 @@ class CallManager(
         WebSocketClient.removeListeners()
     }
 
-    @Deprecated("Use android.media.AudioManager#isMicrophoneMute")
+    @Deprecated(
+        "Use android.media.AudioManager#setMicrophoneMute(true)",
+        replaceWith = ReplaceWith(
+            "audioManager.setMicrophoneMute(true)",
+            "android.media.AudioManager"
+        )
+    )
     fun onMute(): Boolean =
         peerConnectionClient.setLocalAudioEnabled(false)
 
-    @Deprecated("Use android.media.AudioManager#isMicrophoneMute")
+    @Deprecated(
+        "Use android.media.AudioManager#setMicrophoneMute(false)",
+        replaceWith = ReplaceWith(
+            "audioManager.setMicrophoneMute(false)",
+            "android.media.AudioManager"
+        )
+    )
     fun onUnmute(): Boolean =
         peerConnectionClient.setLocalAudioEnabled(true)
 
@@ -135,7 +149,7 @@ class CallManager(
             )
 
             val isLocalMediaStreamCreated = peerConnectionClient.createLocalMediaStream()
-            Log.d(TAG, "isLocalMediaStreamCreated: $isLocalMediaStreamCreated")
+            Logger.debug(TAG, "isLocalMediaStreamCreated: $isLocalMediaStreamCreated")
 
             peerConnectionClient.addTransceiver(
                 MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO,
@@ -149,7 +163,7 @@ class CallManager(
     }
 
     override fun onWebSocketMessage(message: JSONObject) {
-        Log.d(TAG, "onMessage() -> message: $message")
+        Logger.debug(TAG, "onMessage() -> message: $message")
 
         when (message.getString("event")) {
             "connect" -> {
@@ -181,7 +195,7 @@ class CallManager(
             "hangup" -> {
                 listener?.onCallEvent(CallEvent.Hangup)
 
-                peerConnectionClient.close()
+                peerConnectionClient.dispose()
 
                 WebSocketClient.disconnect()
             }

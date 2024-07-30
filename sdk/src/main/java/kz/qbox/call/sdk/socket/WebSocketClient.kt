@@ -1,6 +1,5 @@
 package kz.qbox.call.sdk.socket
 
-import android.util.Log
 import kz.qbox.call.sdk.logging.Logger
 import kz.qbox.call.sdk.safeShutdown
 import okhttp3.OkHttpClient
@@ -65,12 +64,14 @@ object WebSocketClient : WebSocketListener() {
     fun sendMessage(message: JSONObject): Boolean {
         val body = message.toString()
         val response = webSocketClient?.send(body) == true
-        Log.d(TAG, "sendMessage() -> body: $body, response: $response")
+        Logger.debug(TAG, "sendMessage() -> body: $body, response: $response")
         return response
     }
 
     fun shutdown() {
-        httpClient.dispatcher.executorService.shutdown()
+        Logger.debug(TAG, "shutdown()")
+
+//        httpClient.dispatcher.executorService.shutdown()
 
         disconnect()
     }
@@ -80,23 +81,9 @@ object WebSocketClient : WebSocketListener() {
     }
 
     private fun createWebSocketClient(url: String, token: String): Boolean {
-        if (webSocketClient == null) {
-            if (webSocketState is WebSocketState.Closing
-                || webSocketState is WebSocketState.Closed
-                || webSocketState is WebSocketState.Failure
-            ) {
-                safeShutdown(
-                    name = "webSocketClient",
-                    action = {
-                        webSocketClient?.cancel()
-                        true
-                    },
-                    onComplete = {
-                        webSocketClient = null
-                    }
-                )
-            }
+        Logger.debug(TAG, "createWebSocketClient() -> url: $url, token: $token")
 
+        if (webSocketClient == null) {
             try {
                 webSocketClient = httpClient.newWebSocket(
                     Request.Builder()
@@ -111,7 +98,16 @@ object WebSocketClient : WebSocketListener() {
             return webSocketClient != null
         } else {
             if (webSocketState == WebSocketState.Open) return true
-            webSocketClient = null
+            safeShutdown(
+                name = "webSocketClient",
+                action = {
+                    webSocketClient?.cancel()
+                    true
+                },
+                onComplete = {
+                    webSocketClient = null
+                }
+            )
             _webSocketState = WebSocketState.IDLE
             return createWebSocketClient(url = url, token = token)
         }
@@ -122,12 +118,12 @@ object WebSocketClient : WebSocketListener() {
      */
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
-        Log.d(TAG, "onOpen()")
+        Logger.debug(TAG, "onOpen()")
         _webSocketState = WebSocketState.Open
     }
 
     override fun onMessage(webSocket: WebSocket, text: String) {
-        Log.d(TAG, "onMessage() -> text: $text")
+        Logger.debug(TAG, "onMessage() -> text: $text")
 
         val message = try {
             JSONObject(text)
@@ -142,16 +138,16 @@ object WebSocketClient : WebSocketListener() {
     }
 
     override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
-        Log.d(TAG, "onMessage() -> bytes: ${bytes.hex()}")
+        Logger.debug(TAG, "onMessage() -> bytes: ${bytes.hex()}")
     }
 
     override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
-        Log.d(TAG, "onClosing() -> code: $code, reason: $reason")
+        Logger.debug(TAG, "onClosing() -> code: $code, reason: $reason")
         _webSocketState = WebSocketState.Closing
     }
 
     override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-        Log.d(TAG, "onClosed() -> code: $code, reason: $reason")
+        Logger.debug(TAG, "onClosed() -> code: $code, reason: $reason")
         _webSocketState = WebSocketState.Closed
     }
 

@@ -156,7 +156,12 @@ class SampleViewModel(
 
     override fun onCallEvent(event: CallEvent) {
         Log.d(TAG, "onCallEvent() -> event: $event")
+
         _uiState.value = _uiState.value.copy(callEvent = event.toString())
+
+        if (event is CallEvent.Hangup) {
+            audioSwitch.stop()
+        }
     }
 
     /**
@@ -178,7 +183,9 @@ class SampleViewModel(
     override fun onCleared() {
         super.onCleared()
 
-        audioManager?.isMicrophoneMute = false
+        Log.d(TAG, "onCleared()")
+
+        audioSwitch.stop()
 
         callManager.onDestroy()
 
