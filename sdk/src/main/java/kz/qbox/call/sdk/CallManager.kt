@@ -44,7 +44,7 @@ class CallManager(
         peerConnectionClient.removeListeners()
 
         WebSocketClient.disconnect()
-        WebSocketClient.shutdown()
+//        WebSocketClient.shutdown()
         WebSocketClient.removeListeners()
     }
 

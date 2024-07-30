@@ -45,6 +45,7 @@ object WebSocketClient : WebSocketListener() {
     }
 
     fun disconnect(): Boolean {
+        Logger.debug(TAG, "disconnect()")
         return if (webSocketClient == null) {
             Logger.warn(TAG, "disconnect() -> [Already disconnected]")
             false
