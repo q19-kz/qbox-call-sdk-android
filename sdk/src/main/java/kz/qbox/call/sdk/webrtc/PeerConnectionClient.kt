@@ -225,6 +225,9 @@ class PeerConnectionClient private constructor(
         JavaAudioDeviceModule.builder(context)
             .setUseHardwareAcousticEchoCanceler(true)
             .setUseHardwareNoiseSuppressor(true)
+            .setAudioRecordStateCallback(null)
+            .setAudioRecordErrorCallback(null)
+            .setEnableVolumeLogger(false)
             .setAudioTrackStateCallback(AudioTrackStateCallback())
             .setAudioTrackErrorCallback(AudioTrackErrorCallback())
             .createAudioDeviceModule()
@@ -490,12 +493,18 @@ class PeerConnectionClient private constructor(
     }
 
     fun shutdown() {
-        executor.shutdown()
+        safeShutdown(
+            name = "executor",
+            action = {
+                executor.shutdown()
+                executor.isShutdown
+            }
+        )
     }
 
     interface Listener {
-        fun onPeerConnectionStateChange(peerConnectionState: PeerConnection.PeerConnectionState?) {}
-        fun onIceConnectionStateChange(iceConnectionState: PeerConnection.IceConnectionState) {}
+        fun onPeerConnectionStateChange(state: PeerConnection.PeerConnectionState?) {}
+        fun onIceConnectionStateChange(state: PeerConnection.IceConnectionState) {}
 
         fun onLocalSessionDescription(sessionDescription: SessionDescription) {}
         fun onLocalIceCandidate(iceCandidate: IceCandidate) {}

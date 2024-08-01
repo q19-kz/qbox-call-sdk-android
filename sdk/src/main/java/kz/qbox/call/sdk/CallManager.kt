@@ -1,15 +1,14 @@
 package kz.qbox.call.sdk
 
+import android.os.CountDownTimer
 import kz.qbox.call.sdk.logging.Logger
 import kz.qbox.call.sdk.socket.WebSocketClient
 import kz.qbox.call.sdk.socket.WebSocketState
 import kz.qbox.call.sdk.webrtc.PeerConnectionClient
 import org.json.JSONObject
 import org.webrtc.IceCandidate
-import org.webrtc.MediaStreamTrack
 import org.webrtc.PeerConnection
 import org.webrtc.PeerConnection.IceServer
-import org.webrtc.RtpTransceiver
 import org.webrtc.SessionDescription
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -28,6 +27,8 @@ class CallManager(
         private const val TAG = "CallManager"
     }
 
+    private var timer: CountDownTimer? = null
+
     fun init(token: String) {
         Logger.debug(TAG, "init() -> token: $token")
         executorService.execute {
@@ -38,6 +39,9 @@ class CallManager(
 
     fun onDestroy() {
         Logger.debug(TAG, "onDestroy()")
+
+        timer?.cancel()
+        timer = null
 
         peerConnectionClient.dispose()
         peerConnectionClient.shutdown()
@@ -82,14 +86,38 @@ class CallManager(
             )
         )
 
-    fun onHangup(): Boolean =
-        WebSocketClient.sendMessage(
+    fun onHangup(): Boolean {
+        val enqueued = WebSocketClient.sendMessage(
             JSONObject(
                 mapOf(
                     "event" to "hangup"
                 )
             )
         )
+
+        if (enqueued) {
+            timer?.cancel()
+            timer = null
+            timer = object : CountDownTimer(10_000L, 1_000L) {
+                override fun onTick(p0: Long) {
+                    Logger.debug(TAG, "CountDownTimer#onTick() -> p0: $p0")
+                }
+
+                override fun onFinish() {
+                    Logger.debug(TAG, "CountDownTimer#onFinish()")
+
+                    listener?.onCallEvent(CallEvent.Hangup)
+
+                    peerConnectionClient.dispose()
+
+                    WebSocketClient.disconnect()
+                }
+            }
+            timer?.start()
+        }
+
+        return enqueued
+    }
 
     private fun connectToWebSocket(token: String): Boolean {
         Logger.debug(TAG, "connectToWebSocket() -> token: $token")
@@ -197,6 +225,9 @@ class CallManager(
             }
 
             "hangup" -> {
+                timer?.cancel()
+                timer = null
+
                 listener?.onCallEvent(CallEvent.Hangup)
 
                 peerConnectionClient.dispose()
@@ -218,15 +249,15 @@ class CallManager(
         sendLocalICECandidate(iceCandidate)
     }
 
-    override fun onPeerConnectionStateChange(peerConnectionState: PeerConnection.PeerConnectionState?) {
-        Logger.debug(TAG, "onPeerConnectionStateChange() -> peerConnectionState: $peerConnectionState")
-        listener?.onWebRTCPeerConnectionChange(peerConnectionState)
+    override fun onPeerConnectionStateChange(state: PeerConnection.PeerConnectionState?) {
+        Logger.debug(TAG, "onPeerConnectionStateChange() -> state: $state")
+        listener?.onWebRTCPeerConnectionChange(state)
     }
 
     interface Listener {
         fun onCallEvent(event: CallEvent) {}
         fun onWebSocketStateChange(state: WebSocketState) {}
-        fun onWebRTCPeerConnectionChange(peerConnectionState: PeerConnection.PeerConnectionState?) {}
+        fun onWebRTCPeerConnectionChange(state: PeerConnection.PeerConnectionState?) {}
     }
 
 }

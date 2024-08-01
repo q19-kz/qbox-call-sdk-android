@@ -177,8 +177,8 @@ class SampleViewModel(
         _uiState.value = _uiState.value.copy(webSocketState = state.toString())
     }
 
-    override fun onWebRTCPeerConnectionChange(peerConnectionState: PeerConnection.PeerConnectionState?) {
-        _uiState.value = _uiState.value.copy(webRTCState = peerConnectionState?.name)
+    override fun onWebRTCPeerConnectionChange(state: PeerConnection.PeerConnectionState?) {
+        _uiState.value = _uiState.value.copy(webRTCState = state?.name)
     }
 
     /**

@@ -64,9 +64,9 @@ object WebSocketClient : WebSocketListener() {
 
     fun sendMessage(message: JSONObject): Boolean {
         val body = message.toString()
-        val response = webSocketClient?.send(body) == true
-        Logger.debug(TAG, "sendMessage() -> body: $body, response: $response")
-        return response
+        val enqueued = webSocketClient?.send(body) == true
+        Logger.debug(TAG, "sendMessage() -> body: $body, enqueued: $enqueued")
+        return enqueued
     }
 
     fun shutdown() {
