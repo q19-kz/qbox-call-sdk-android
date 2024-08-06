@@ -94,6 +94,8 @@ class CallManager(
         )
 
     fun onHangup(): Boolean {
+        Logger.debug(TAG, "onHangup()")
+
         val enqueued = WebSocketClient.sendMessage(
             JSONObject(
                 mapOf(
@@ -247,6 +249,10 @@ class CallManager(
     /**
      * [PeerConnectionClient.Listener]
      */
+
+    override fun onPeerConnectionClientStateChange(state: PeerConnectionClientState) {
+        Logger.debug(TAG, "onPeerConnectionClientStateChange() -> state: $state")
+    }
 
     override fun onLocalSessionDescription(sessionDescription: SessionDescription) {
         sendLocalSessionDescription(sessionDescription)

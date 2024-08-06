@@ -389,8 +389,6 @@ class PeerConnectionClient private constructor(
 
         localSessionDescription = null
         remoteSessionDescription = null
-
-        _peerConnectionClientState = PeerConnectionClientState.IDLE
     }
 
     fun close() {
@@ -410,10 +408,15 @@ class PeerConnectionClient private constructor(
     }
 
     fun dispose(): Boolean {
-        Logger.debug(TAG, "dispose() -> [Started]")
+        Logger.debug(TAG, "dispose() -> [Started] state: $_peerConnectionClientState")
 
         if (_peerConnectionClientState == PeerConnectionClientState.Disposing) {
             Logger.warn(TAG, "dispose() -> [Already disposing]")
+            return false
+        }
+
+        if (_peerConnectionClientState == PeerConnectionClientState.Disposed) {
+            Logger.warn(TAG, "dispose() -> [Already disposed]")
             return false
         }
 
