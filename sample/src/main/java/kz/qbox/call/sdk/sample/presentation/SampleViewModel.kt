@@ -63,6 +63,8 @@ class SampleViewModel(
         listener = this
     )
 
+    private var token: String? = null
+
     init {
         QBoxSDK.init(
             isLoggingEnabled = true,
@@ -80,6 +82,8 @@ class SampleViewModel(
 
         generateToken(
             onResponse = { token ->
+                this.token = token
+
                 callManager.init(token = token)
             },
             onFailure = {
@@ -117,6 +121,10 @@ class SampleViewModel(
     fun onDTMFButtonPressed(symbol: String): Boolean =
         callManager.onDTMFButtonPressed(symbol)
 
+    fun onDisconnect() {
+        callManager.onDestroy()
+    }
+
     fun onReconnect(): Boolean {
         if (callManager.getWebSocketClientState() == WebSocketClientState.Open) {
             Log.w(TAG, "onReconnect() -> [WebSocketClient active]")
@@ -128,14 +136,21 @@ class SampleViewModel(
             return false
         }
 
-        generateToken(
-            onResponse = { token ->
-                callManager.init(token = token)
-            },
-            onFailure = {
-                it.printStackTrace()
-            }
-        )
+        val cachedToken = token
+        if (cachedToken.isNullOrBlank()) {
+            generateToken(
+                onResponse = { token ->
+                    this.token = token
+
+                    callManager.init(token = token)
+                },
+                onFailure = {
+                    it.printStackTrace()
+                }
+            )
+        } else {
+            callManager.init(token = cachedToken)
+        }
 
         return true
     }
@@ -213,6 +228,8 @@ class SampleViewModel(
         super.onCleared()
 
         Log.d(TAG, "onCleared()")
+
+        token = null
 
         audioSwitch.stop()
 

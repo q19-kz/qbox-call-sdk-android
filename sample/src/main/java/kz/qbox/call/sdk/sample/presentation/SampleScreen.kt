@@ -205,11 +205,20 @@ fun SampleScreen(
             Row {
                 TextButton(
                     onClick = {
+                        viewModel.onDisconnect()
+                    }
+                ) {
+                    Text("Disconnect")
+                }
+                TextButton(
+                    onClick = {
                         viewModel.onReconnect()
                     }
                 ) {
                     Text("Reconnect")
                 }
+            }
+            Row {
                 TextButton(
                     onClick = {
                         viewModel.onHangup()
