@@ -77,6 +77,8 @@ class PeerConnectionClient private constructor(
     private var localAudioTrack: AudioTrack? = null
     private var remoteAudioTrack: AudioTrack? = null
 
+    private var state: PeerConnectionClientState = PeerConnectionClientState.IDLE
+
     private val audioBooleanConstraints by lazy {
         RTCConstraints<AudioBooleanConstraint, Boolean>().apply {
         }
@@ -214,6 +216,8 @@ class PeerConnectionClient private constructor(
                 .createPeerConnectionFactory()
 
             peerConnection = peerConnectionFactory?.let { createPeerConnectionInternally(it) }
+
+            state = PeerConnectionClientState.Created
 
             return@Callable peerConnection
         })
@@ -377,6 +381,8 @@ class PeerConnectionClient private constructor(
 
         localSessionDescription = null
         remoteSessionDescription = null
+
+        state = PeerConnectionClientState.IDLE
     }
 
     fun close() {
@@ -396,6 +402,15 @@ class PeerConnectionClient private constructor(
     }
 
     fun dispose(): Boolean {
+        Logger.debug(TAG, "dispose() -> [Started]")
+
+        if (state == PeerConnectionClientState.Disposing) {
+            Logger.warn(TAG, "dispose() -> [Already disposing]")
+            return false
+        }
+
+        state = PeerConnectionClientState.Disposing
+
         reset()
 
         if (audioDeviceModule != null) {
@@ -488,6 +503,10 @@ class PeerConnectionClient private constructor(
                 }
             )
         }
+
+        state = PeerConnectionClientState.Disposed
+
+        Logger.debug(TAG, "dispose() -> [Completed]")
 
         return true
     }
