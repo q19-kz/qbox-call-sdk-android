@@ -3,8 +3,9 @@ package kz.qbox.call.sdk
 import android.os.CountDownTimer
 import kz.qbox.call.sdk.logging.Logger
 import kz.qbox.call.sdk.socket.WebSocketClient
-import kz.qbox.call.sdk.socket.WebSocketState
+import kz.qbox.call.sdk.socket.WebSocketClientState
 import kz.qbox.call.sdk.webrtc.PeerConnectionClient
+import kz.qbox.call.sdk.webrtc.PeerConnectionClientState
 import org.json.JSONObject
 import org.webrtc.IceCandidate
 import org.webrtc.PeerConnection
@@ -51,6 +52,12 @@ class CallManager(
 //        WebSocketClient.shutdown()
         WebSocketClient.removeListeners()
     }
+
+    fun getPeerConnectionClientState(): PeerConnectionClientState =
+        peerConnectionClient.peerConnectionClientState
+
+    fun getWebSocketClientState(): WebSocketClientState =
+        WebSocketClient.webSocketClientState
 
     @Deprecated(
         "Use android.media.AudioManager#setMicrophoneMute(true)",
@@ -169,12 +176,12 @@ class CallManager(
      * [WebSocketClient.Listener]
      */
 
-    override fun onWebSocketStateChange(state: WebSocketState) {
+    override fun onWebSocketClientStateChange(state: WebSocketClientState) {
         Logger.debug(TAG, "onWebSocketStateChange() -> state: $state")
 
         listener?.onWebSocketStateChange(state)
 
-        if (state == WebSocketState.Open) {
+        if (state == WebSocketClientState.Open) {
             peerConnectionClient.createPeerConnection(
                 iceServers = iceServers,
                 listener = this
@@ -256,7 +263,7 @@ class CallManager(
 
     interface Listener {
         fun onCallEvent(event: CallEvent) {}
-        fun onWebSocketStateChange(state: WebSocketState) {}
+        fun onWebSocketStateChange(state: WebSocketClientState) {}
         fun onWebRTCPeerConnectionChange(state: PeerConnection.PeerConnectionState?) {}
     }
 

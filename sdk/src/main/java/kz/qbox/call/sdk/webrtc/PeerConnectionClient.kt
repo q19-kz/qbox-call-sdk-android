@@ -77,7 +77,15 @@ class PeerConnectionClient private constructor(
     private var localAudioTrack: AudioTrack? = null
     private var remoteAudioTrack: AudioTrack? = null
 
-    private var state: PeerConnectionClientState = PeerConnectionClientState.IDLE
+    private var _peerConnectionClientState: PeerConnectionClientState =
+        PeerConnectionClientState.IDLE
+        set(value) {
+            field = value
+            listener?.onPeerConnectionClientStateChange(value)
+        }
+
+    val peerConnectionClientState: PeerConnectionClientState
+        get() = _peerConnectionClientState
 
     private val audioBooleanConstraints by lazy {
         RTCConstraints<AudioBooleanConstraint, Boolean>().apply {
@@ -217,7 +225,7 @@ class PeerConnectionClient private constructor(
 
             peerConnection = peerConnectionFactory?.let { createPeerConnectionInternally(it) }
 
-            state = PeerConnectionClientState.Created
+            _peerConnectionClientState = PeerConnectionClientState.Created
 
             return@Callable peerConnection
         })
@@ -382,7 +390,7 @@ class PeerConnectionClient private constructor(
         localSessionDescription = null
         remoteSessionDescription = null
 
-        state = PeerConnectionClientState.IDLE
+        _peerConnectionClientState = PeerConnectionClientState.IDLE
     }
 
     fun close() {
@@ -404,12 +412,12 @@ class PeerConnectionClient private constructor(
     fun dispose(): Boolean {
         Logger.debug(TAG, "dispose() -> [Started]")
 
-        if (state == PeerConnectionClientState.Disposing) {
+        if (_peerConnectionClientState == PeerConnectionClientState.Disposing) {
             Logger.warn(TAG, "dispose() -> [Already disposing]")
             return false
         }
 
-        state = PeerConnectionClientState.Disposing
+        _peerConnectionClientState = PeerConnectionClientState.Disposing
 
         reset()
 
@@ -504,7 +512,7 @@ class PeerConnectionClient private constructor(
             )
         }
 
-        state = PeerConnectionClientState.Disposed
+        _peerConnectionClientState = PeerConnectionClientState.Disposed
 
         Logger.debug(TAG, "dispose() -> [Completed]")
 
@@ -522,6 +530,8 @@ class PeerConnectionClient private constructor(
     }
 
     interface Listener {
+        fun onPeerConnectionClientStateChange(state: PeerConnectionClientState) {}
+
         fun onPeerConnectionStateChange(state: PeerConnection.PeerConnectionState?) {}
         fun onIceConnectionStateChange(state: PeerConnection.IceConnectionState) {}
 

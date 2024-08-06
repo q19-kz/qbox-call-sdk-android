@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kz.qbox.call.sdk.CallEvent
 import kz.qbox.call.sdk.CallManager
 import kz.qbox.call.sdk.QBoxSDK
-import kz.qbox.call.sdk.socket.WebSocketState
+import kz.qbox.call.sdk.socket.WebSocketClientState
 import kz.qbox.call.sdk.webrtc.PeerConnectionClient
 import okhttp3.Call
 import okhttp3.Callback
@@ -173,7 +173,7 @@ class SampleViewModel(
      * [kz.qbox.call.sdk.socket.WebSocketClient.Listener]
      */
 
-    override fun onWebSocketStateChange(state: WebSocketState) {
+    override fun onWebSocketStateChange(state: WebSocketClientState) {
         _uiState.value = _uiState.value.copy(webSocketState = state.toString())
     }
 

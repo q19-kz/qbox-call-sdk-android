@@ -26,15 +26,14 @@ object WebSocketClient : WebSocketListener() {
 
     private var webSocketClient: WebSocket? = null
 
-    private var _webSocketState: WebSocketState = WebSocketState.IDLE
+    private var _webSocketClientState: WebSocketClientState = WebSocketClientState.IDLE
         set(value) {
             field = value
-            listener?.onWebSocketStateChange(value)
+            listener?.onWebSocketClientStateChange(value)
         }
 
-    @Suppress("MemberVisibilityCanBePrivate")
-    val webSocketState: WebSocketState
-        get() = _webSocketState
+    val webSocketClientState: WebSocketClientState
+        get() = _webSocketClientState
 
     private var listener: Listener? = null
 
@@ -98,7 +97,7 @@ object WebSocketClient : WebSocketListener() {
 
             return webSocketClient != null
         } else {
-            if (webSocketState == WebSocketState.Open) return true
+            if (webSocketClientState == WebSocketClientState.Open) return true
             safeShutdown(
                 name = "webSocketClient",
                 action = {
@@ -109,7 +108,7 @@ object WebSocketClient : WebSocketListener() {
                     webSocketClient = null
                 }
             )
-            _webSocketState = WebSocketState.IDLE
+            _webSocketClientState = WebSocketClientState.IDLE
             return createWebSocketClient(url = url, token = token)
         }
     }
@@ -120,7 +119,7 @@ object WebSocketClient : WebSocketListener() {
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
         Logger.debug(TAG, "onOpen()")
-        _webSocketState = WebSocketState.Open
+        _webSocketClientState = WebSocketClientState.Open
     }
 
     override fun onMessage(webSocket: WebSocket, text: String) {
@@ -144,21 +143,21 @@ object WebSocketClient : WebSocketListener() {
 
     override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
         Logger.debug(TAG, "onClosing() -> code: $code, reason: $reason")
-        _webSocketState = WebSocketState.Closing
+        _webSocketClientState = WebSocketClientState.Closing
     }
 
     override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
         Logger.debug(TAG, "onClosed() -> code: $code, reason: $reason")
-        _webSocketState = WebSocketState.Closed
+        _webSocketClientState = WebSocketClientState.Closed
     }
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
         t.printStackTrace()
-        _webSocketState = WebSocketState.Failure(t)
+        _webSocketClientState = WebSocketClientState.Failure(t)
     }
 
     interface Listener {
-        fun onWebSocketStateChange(state: WebSocketState)
+        fun onWebSocketClientStateChange(state: WebSocketClientState)
         fun onWebSocketMessage(message: JSONObject)
     }
 }
