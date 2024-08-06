@@ -12,9 +12,8 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 
-const val TAG = "WebSocketClient"
-
 object WebSocketClient : WebSocketListener() {
+    const val TAG = "WebSocketClient"
 
     private val httpClient by lazy(LazyThreadSafetyMode.NONE) {
         OkHttpClient.Builder()

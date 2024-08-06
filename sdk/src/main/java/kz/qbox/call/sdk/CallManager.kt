@@ -45,7 +45,7 @@ class CallManager(
         timer = null
 
         peerConnectionClient.dispose()
-        peerConnectionClient.shutdown()
+//        peerConnectionClient.shutdown()
         peerConnectionClient.removeListeners()
 
         WebSocketClient.disconnect()

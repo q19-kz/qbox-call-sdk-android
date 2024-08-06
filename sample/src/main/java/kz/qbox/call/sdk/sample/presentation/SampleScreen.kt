@@ -205,6 +205,13 @@ fun SampleScreen(
             Row {
                 TextButton(
                     onClick = {
+                        viewModel.onReconnect()
+                    }
+                ) {
+                    Text("Reconnect")
+                }
+                TextButton(
+                    onClick = {
                         viewModel.onHangup()
                     }
                 ) {

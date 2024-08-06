@@ -13,6 +13,7 @@ import kz.qbox.call.sdk.CallManager
 import kz.qbox.call.sdk.QBoxSDK
 import kz.qbox.call.sdk.socket.WebSocketClientState
 import kz.qbox.call.sdk.webrtc.PeerConnectionClient
+import kz.qbox.call.sdk.webrtc.PeerConnectionClientState
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -115,6 +116,29 @@ class SampleViewModel(
 
     fun onDTMFButtonPressed(symbol: String): Boolean =
         callManager.onDTMFButtonPressed(symbol)
+
+    fun onReconnect(): Boolean {
+        if (callManager.getWebSocketClientState() == WebSocketClientState.Open) {
+            Log.w(TAG, "onReconnect() -> [WebSocketClient active]")
+            return false
+        }
+
+        if (callManager.getPeerConnectionClientState() == PeerConnectionClientState.Created) {
+            Log.w(TAG, "onReconnect() -> [PeerConnectionClient active]")
+            return false
+        }
+
+        generateToken(
+            onResponse = { token ->
+                callManager.init(token = token)
+            },
+            onFailure = {
+                it.printStackTrace()
+            }
+        )
+
+        return true
+    }
 
     fun onHangup(): Boolean =
         callManager.onHangup()
