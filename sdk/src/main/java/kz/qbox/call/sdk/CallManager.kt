@@ -50,7 +50,7 @@ class CallManager(
 
         WebSocketClient.disconnect()
 //        WebSocketClient.shutdown()
-        WebSocketClient.removeListeners()
+        WebSocketClient.setListener(null)
     }
 
     fun getPeerConnectionClientState(): PeerConnectionClientState =
@@ -134,11 +134,10 @@ class CallManager(
         if (url.isNullOrBlank()) {
             throw IllegalStateException("WebSocket URL is null or blank!")
         }
-        return WebSocketClient.connect(
-            url = url,
-            token = token,
-            listener = this
-        )
+        return WebSocketClient
+            .init(url = url, token = token)
+            .setListener(this)
+            .connect()
     }
 
     private fun sendLocalSessionDescription(sessionDescription: SessionDescription): Boolean =

@@ -1,5 +1,6 @@
 package kz.qbox.call.sdk.socket
 
+import android.os.CountDownTimer
 import kz.qbox.call.sdk.logging.Logger
 import kz.qbox.call.sdk.safeShutdown
 import okhttp3.OkHttpClient
@@ -14,6 +15,9 @@ import java.util.concurrent.TimeUnit
 
 object WebSocketClient : WebSocketListener() {
     const val TAG = "WebSocketClient"
+
+    private const val FORCE_DISCONNECT_CODE = 4096
+    private const val FORCE_DISCONNECT_REASON = "FORCE_DISCONNECT"
 
     private val httpClient by lazy(LazyThreadSafetyMode.NONE) {
         OkHttpClient.Builder()
@@ -31,14 +35,32 @@ object WebSocketClient : WebSocketListener() {
             listener?.onWebSocketClientStateChange(value)
         }
 
+    private var url: String? = null
+    private var token: String? = null
+
+    private var timer: CountDownTimer? = null
+
+    private var reconnectAttemptCount: Int = 0
+
     val webSocketClientState: WebSocketClientState
         get() = _webSocketClientState
 
     private var listener: Listener? = null
 
-    fun connect(url: String, token: String, listener: Listener): Boolean {
-        WebSocketClient.listener = listener
+    fun init(url: String, token: String): WebSocketClient {
+        this.url = url
+        this.token = token
+        return this
+    }
 
+    fun setListener(listener: Listener?): WebSocketClient {
+        this.listener = listener
+        return this
+    }
+
+    fun connect(): Boolean {
+        val url = url ?: throw IllegalStateException("url null or blank!")
+        val token = token ?: throw IllegalStateException("token null or blank!")
         return createWebSocketClient(url = url, token = token)
     }
 
@@ -51,7 +73,7 @@ object WebSocketClient : WebSocketListener() {
             safeShutdown(
                 name = "webSocketClient",
                 action = {
-                    webSocketClient?.close(4996, "disconnect") == true
+                    webSocketClient?.close(FORCE_DISCONNECT_CODE, FORCE_DISCONNECT_REASON) == true
                 },
                 onComplete = {
                     webSocketClient = null
@@ -73,10 +95,6 @@ object WebSocketClient : WebSocketListener() {
 //        httpClient.dispatcher.executorService.shutdown()
 
         disconnect()
-    }
-
-    fun removeListeners() {
-        listener = null
     }
 
     private fun createWebSocketClient(url: String, token: String): Boolean {
@@ -118,7 +136,13 @@ object WebSocketClient : WebSocketListener() {
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
         Logger.debug(TAG, "onOpen()")
+
         _webSocketClientState = WebSocketClientState.Open
+
+        timer?.cancel()
+        timer = null
+
+        reconnectAttemptCount = 0
     }
 
     override fun onMessage(webSocket: WebSocket, text: String) {
@@ -142,16 +166,45 @@ object WebSocketClient : WebSocketListener() {
 
     override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
         Logger.debug(TAG, "onClosing() -> code: $code, reason: $reason")
+
         _webSocketClientState = WebSocketClientState.Closing
     }
 
     override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
         Logger.debug(TAG, "onClosed() -> code: $code, reason: $reason")
+
         _webSocketClientState = WebSocketClientState.Closed
+
+        when {
+            code == FORCE_DISCONNECT_CODE && reason == FORCE_DISCONNECT_REASON -> {
+            }
+
+            else -> {
+                if (reconnectAttemptCount < 3) {
+                    try {
+                        timer?.cancel()
+                        timer = null
+                        timer = object : CountDownTimer(1_000L, 1_000L) {
+                            override fun onTick(p0: Long) {
+                            }
+
+                            override fun onFinish() {
+                                connect()
+                            }
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    } finally {
+                        reconnectAttemptCount++
+                    }
+                }
+            }
+        }
     }
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
         t.printStackTrace()
+
         _webSocketClientState = WebSocketClientState.Failure(t)
     }
 
