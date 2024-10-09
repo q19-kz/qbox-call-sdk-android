@@ -4,6 +4,16 @@ android {
     defaultConfig {
         consumerProguardFiles 'consumer-rules.pro'
     }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+        }
+
+        release {
+            minifyEnabled false
+        }
+    }
 }
 
 dependencies {
