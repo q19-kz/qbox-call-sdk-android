@@ -1,18 +1,20 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
     namespace = 'kz.qbox.call.sdk.sample'
 
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId 'kz.qbox.call.sdk.sample'
 
         minSdk 21
-        targetSdk 34
+        targetSdk 35
 
         versionCode project.ext.version_code
         versionName version
@@ -32,16 +34,16 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_19
+        targetCompatibility JavaVersion.VERSION_19
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14"
+        kotlinCompilerExtensionVersion = "1.5.15"
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
+        jvmTarget = JavaVersion.VERSION_19.toString()
     }
 }
 
@@ -65,6 +67,8 @@ dependencies {
     implementation(libs.audioswitch)
 
     implementation(libs.okhttp.logging.interceptor)
+
+//    implementation("com.github.q19-kz:qbox-call-sdk-android:1.0.9")
 
     implementation(project(":sdk"))
 

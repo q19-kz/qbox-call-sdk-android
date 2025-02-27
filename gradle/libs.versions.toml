@@ -1,17 +1,17 @@
 [versions]
 #agp = "8.3.2"
-#kotlin = "1.9.0"
-activityCompose = "1.9.1"
+kotlin = "2.1.10"
+activityCompose = "1.10.1"
 #appcompat = "1.7.0"
 audioswitch = "1.2.0"
-composeBom = "2024.06.00"
-coreKtx = "1.13.1"
-accompanistPermissions = "0.35.1-alpha"
+composeBom = "2025.02.00"
+coreKtx = "1.15.0"
+accompanistPermissions = "0.37.2"
 leakcanary = "2.14"
-lifecycle = "2.8.4"
+lifecycle = "2.8.7"
 #material = "1.12.0"
 okttp = "4.12.0"
-webrtc = "125.6422.02"
+webrtc = "125.6422.06.1"
 
 [libraries]
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
@@ -47,7 +47,8 @@ okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-i
 # WebRTC
 webrtc = { group = "io.github.webrtc-sdk", name = "android", version.ref = "webrtc" }
 
-#[plugins]
+[plugins]
 #androidApplication = { id = "com.android.application", version.ref = "agp" }
 #androidLibrary = { id = "com.android.library", version.ref = "agp" }
 #jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
