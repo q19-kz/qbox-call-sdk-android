@@ -17,13 +17,15 @@ class SampleActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val isAuthZone = intent.getBooleanExtra("is_auth_zone", false)
+
         setContent {
             QBoxCallSDKTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    SampleScreen(applicationContext)
+                    SampleScreen(applicationContext, isAuthZone)
                 }
             }
         }

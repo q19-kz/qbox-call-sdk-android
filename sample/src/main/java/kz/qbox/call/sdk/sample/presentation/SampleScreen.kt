@@ -49,8 +49,10 @@ const val TAG = "SampleScreen"
 @Composable
 fun SampleScreen(
     context: Context,
+    isAuthZone: Boolean,
     viewModel: SampleViewModel = viewModel {
         SampleViewModel(
+            isAuthZone = isAuthZone,
             audioManager = ContextCompat.getSystemService(context, AudioManager::class.java),
             audioSwitch = AudioSwitch(
                 context = context,
@@ -96,7 +98,9 @@ fun SampleScreen(
             }
         ) {
             Surface(
-                modifier = Modifier.wrapContentWidth().wrapContentHeight(),
+                modifier = Modifier
+                    .wrapContentWidth()
+                    .wrapContentHeight(),
                 shape = MaterialTheme.shapes.large,
                 tonalElevation = AlertDialogDefaults.TonalElevation
             ) {
@@ -127,7 +131,17 @@ fun SampleScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Row {
-                Text("Permissions: ${listOf(modifyAudioSettingsPermissionState, recordAudioPermissionState).all { it.status.isGranted }}")
+                Text("Auth zone: $isAuthZone")
+            }
+            Row {
+                Text(
+                    "Permissions: ${
+                        listOf(
+                            modifyAudioSettingsPermissionState,
+                            recordAudioPermissionState
+                        ).all { it.status.isGranted }
+                    }"
+                )
             }
             Row {
                 Text("Audio input: ${uiState.isMuted}")

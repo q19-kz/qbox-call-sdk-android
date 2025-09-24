@@ -21,6 +21,7 @@ class CallManager(
         IceServer.builder("stun:stun.l.google.com:19302")
             .createIceServer(),
     ),
+    private val isAuthZone: Boolean = false,
     var listener: Listener? = null
 ) : WebSocketClient.Listener, PeerConnectionClient.Listener {
 
@@ -147,6 +148,7 @@ class CallManager(
                 mapOf(
                     "event" to "call",
                     "call" to mapOf(
+                        "auth_zone" to isAuthZone,
                         "sdp" to JSONObject(
                             mapOf(
                                 "type" to sessionDescription.type.canonicalForm(),

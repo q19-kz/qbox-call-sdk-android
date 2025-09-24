@@ -7,6 +7,7 @@ import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
 
@@ -17,17 +18,60 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val layout = LinearLayout(this)
-        layout.orientation = LinearLayout.VERTICAL
-        layout.gravity = Gravity.CENTER
+        val rootLayout = LinearLayout(this)
+        rootLayout.orientation = LinearLayout.VERTICAL
+        rootLayout.gravity = Gravity.CENTER
 
-        val button = Button(this)
-        button.text = "Launch"
-        button.setOnClickListener {
-            startActivity(Intent(this, SampleActivity::class.java))
+        var isAuthZone = false
+
+        val authZoneLayout = LinearLayout(this)
+        authZoneLayout.orientation = LinearLayout.HORIZONTAL
+        authZoneLayout.gravity = Gravity.CENTER
+
+        val isAuthZoneTextView = TextView(this)
+        isAuthZoneTextView.text = "Auth zone?".uppercase()
+        authZoneLayout.addView(
+            isAuthZoneTextView,
+            ViewGroup.MarginLayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                marginEnd = 50
+            }
+        )
+
+        val isAuthZoneButton = Button(this)
+        isAuthZoneButton.text = isAuthZone.toString()
+        isAuthZoneButton.setOnClickListener {
+            isAuthZone = !isAuthZone
+            isAuthZoneButton.text = isAuthZone.toString()
         }
-        layout.addView(
-            button,
+        authZoneLayout.addView(
+            isAuthZoneButton,
+            ViewGroup.MarginLayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+        rootLayout.addView(
+            authZoneLayout,
+            ViewGroup.MarginLayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        val launchButton = Button(this)
+        launchButton.text = "Launch"
+        launchButton.setOnClickListener {
+            startActivity(
+                Intent(this, SampleActivity::class.java).apply {
+                    putExtra("is_auth_zone", isAuthZone)
+                }
+            )
+        }
+        rootLayout.addView(
+            launchButton,
             ViewGroup.MarginLayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -35,7 +79,7 @@ class MainActivity : ComponentActivity() {
         )
 
         addContentView(
-            layout,
+            rootLayout,
             ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT,

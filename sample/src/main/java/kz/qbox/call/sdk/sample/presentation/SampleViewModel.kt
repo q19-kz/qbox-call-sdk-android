@@ -28,6 +28,7 @@ import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 class SampleViewModel(
+    isAuthZone: Boolean,
     private val audioManager: AudioManager?,
     private val audioSwitch: AudioSwitch,
     peerConnectionClient: PeerConnectionClient
@@ -60,6 +61,7 @@ class SampleViewModel(
 
     private val callManager = CallManager(
         peerConnectionClient = peerConnectionClient,
+        isAuthZone = isAuthZone,
         listener = this
     )
 
