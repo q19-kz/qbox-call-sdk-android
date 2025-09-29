@@ -8,42 +8,38 @@ plugins {
 android {
     namespace = 'kz.qbox.call.sdk.sample'
 
-    compileSdk 36
+    compileSdk = 36
 
     defaultConfig {
-        applicationId 'kz.qbox.call.sdk.sample'
+        applicationId = 'kz.qbox.call.sdk.sample'
 
-        minSdk 21
-        targetSdk 36
+        minSdk = 21
+        targetSdk = 36
 
-        versionCode project.ext.version_code
-        versionName version
+        versionCode = project.ext.version_code
+        versionName = version
     }
 
     buildTypes {
         debug {
-            minifyEnabled false
+            minifyEnabled = false
 
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
     buildFeatures {
-        buildConfig true
+        buildConfig = true
         compose = true
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_19
-        targetCompatibility JavaVersion.VERSION_19
+        sourceCompatibility = JavaVersion.VERSION_19
+        targetCompatibility = JavaVersion.VERSION_19
     }
 
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.15"
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_19.toString()
     }
 }
 
@@ -73,4 +69,8 @@ dependencies {
     implementation(project(":sdk"))
 
     debugImplementation(libs.leakcanary.android)
+}
+
+kotlin {
+    jvmToolchain(19)
 }

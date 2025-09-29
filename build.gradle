@@ -56,41 +56,32 @@ subprojects { Project project ->
     apply plugin: 'maven-publish'
 
     android {
-        compileSdk 36
+        compileSdk = 36
 
         defaultConfig {
-            minSdk 21
-            targetSdk 36
+            minSdk = 21
+            targetSdk = 36
 
-            versionCode project.ext.version_code
-            versionName project.version
+            versionCode = project.ext.version_code
+            versionName = project.version
         }
 
         buildTypes {
             release {
-                minifyEnabled false
+                minifyEnabled = false
 
                 proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             }
         }
 
         buildFeatures {
-            buildConfig false
+            buildConfig = false
         }
 
         publishing {
             singleVariant("release") {
                 withSourcesJar()
             }
-        }
-
-        compileOptions {
-            sourceCompatibility JavaVersion.VERSION_17
-            targetCompatibility JavaVersion.VERSION_17
-        }
-
-        kotlinOptions {
-            jvmTarget = JavaVersion.VERSION_17.toString()
         }
 
         configurations.configureEach {
@@ -102,14 +93,16 @@ subprojects { Project project ->
         }
     }
 
-    afterEvaluate {
-        android.libraryVariants.each { variant ->
-            publishing.publications.create(variant.name, MavenPublication) {
-                from components.getByName(variant.name)
+    kotlin {
+        jvmToolchain(19)
+    }
 
-                groupId project.group
-                artifactId project.ext.artifactId
-                version project.version
+    publishing {
+        publications {
+            release(MavenPublication) {
+                groupId = project.group
+                artifactId = project.ext.artifactId
+                version = project.version
 
                 pom {
                     name = project.name
@@ -120,6 +113,10 @@ subprojects { Project project ->
                             name = 'zhombie'
                         }
                     }
+                }
+
+                afterEvaluate {
+                    from components.release
                 }
             }
         }
