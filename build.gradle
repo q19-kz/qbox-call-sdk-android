@@ -84,6 +84,11 @@ subprojects { Project project ->
             }
         }
 
+        compileOptions {
+            sourceCompatibility = JavaVersion.VERSION_17
+            targetCompatibility = JavaVersion.VERSION_17
+        }
+
         configurations.configureEach {
             resolutionStrategy.eachDependency { DependencyResolveDetails details ->
                 if (details.requested.group == 'org.jetbrains.kotlin') {
@@ -94,7 +99,13 @@ subprojects { Project project ->
     }
 
     kotlin {
-        jvmToolchain(19)
+        jvmToolchain(17)
+    }
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
     }
 
     publishing {
