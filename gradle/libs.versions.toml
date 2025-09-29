@@ -37,6 +37,9 @@ audioswitch = { group = "com.twilio", name = "audioswitch", version.ref = "audio
 # LeakCanary
 leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 
+# Kotlin
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+
 # OkHttpClient
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okttp" }
 okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okttp" }
