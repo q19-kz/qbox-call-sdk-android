@@ -8,13 +8,13 @@ plugins {
 android {
     namespace = 'kz.qbox.call.sdk.sample'
 
-    compileSdk 35
+    compileSdk 36
 
     defaultConfig {
         applicationId 'kz.qbox.call.sdk.sample'
 
         minSdk 21
-        targetSdk 35
+        targetSdk 36
 
         versionCode project.ext.version_code
         versionName version
