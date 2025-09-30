@@ -163,14 +163,6 @@ static def getParentFolderModuleName(Project project) {
     return null
 }
 
-tasks.register('printJavaInfo') {
-    doLast {
-        println ">>> JAVA VERSION: ${System.getProperty('java.version')}"
-        println ">>> JAVA VENDOR : ${System.getProperty('java.vendor')}"
-        println ">>> JAVA HOME   : ${System.getProperty('java.home')}"
-    }
-}
-
 tasks.register('clean', Delete) {
     delete rootProject.layout.buildDirectory
 }
