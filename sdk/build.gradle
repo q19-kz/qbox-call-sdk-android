@@ -17,7 +17,6 @@ android {
 }
 
 dependencies {
-    implementation(libs.kotlin.stdlib)
     api(libs.okhttp)
     api(libs.webrtc)
 }

@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '2.2.20'
+    ext.kotlin_version = '1.9.25'
 
     repositories {
         google()
@@ -7,7 +7,7 @@ buildscript {
     }
 
     dependencies {
-        classpath libs.gradle
+        classpath 'com.android.tools.build:gradle:8.8.2'
 
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
@@ -28,8 +28,8 @@ ext.projectArtifactId = { Project project ->
 
 allprojects {
     group = 'kz.qbox.call.sdk'
-    project.ext.version_code = 11
-    version = '1.1.0'
+    project.ext.version_code = 12
+    version = '1.1.1'
     project.ext.artifactId = rootProject.ext.projectArtifactId(project)
 
     if (project.group != null) {
@@ -56,32 +56,26 @@ subprojects { Project project ->
     apply plugin: 'maven-publish'
 
     android {
-        compileSdk = 36
+        compileSdk 35
 
         defaultConfig {
-            minSdk = 21
-            targetSdk = 36
+            minSdk 21
+            targetSdk 35
 
-            versionCode = project.ext.version_code
-            versionName = project.version
+            versionCode project.ext.version_code
+            versionName project.version
         }
 
         buildTypes {
             release {
-                minifyEnabled = false
+                minifyEnabled false
 
                 proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             }
         }
 
         buildFeatures {
-            buildConfig = false
-        }
-
-        packagingOptions {
-            jniLibs {
-                useLegacyPackaging = true
-            }
+            buildConfig false
         }
 
         publishing {
@@ -91,8 +85,12 @@ subprojects { Project project ->
         }
 
         compileOptions {
-            sourceCompatibility = JavaVersion.VERSION_17
-            targetCompatibility = JavaVersion.VERSION_17
+            sourceCompatibility JavaVersion.VERSION_17
+            targetCompatibility JavaVersion.VERSION_17
+        }
+
+        kotlinOptions {
+            jvmTarget = JavaVersion.VERSION_17.toString()
         }
 
         configurations.configureEach {
@@ -104,22 +102,14 @@ subprojects { Project project ->
         }
     }
 
-    kotlin {
-        jvmToolchain(17)
-    }
+    afterEvaluate {
+        android.libraryVariants.each { variant ->
+            publishing.publications.create(variant.name, MavenPublication) {
+                from components.getByName(variant.name)
 
-    java {
-        toolchain {
-            languageVersion = JavaLanguageVersion.of(17)
-        }
-    }
-
-    publishing {
-        publications {
-            release(MavenPublication) {
-                groupId = project.group
-                artifactId = project.ext.artifactId
-                version = project.version
+                groupId project.group
+                artifactId project.ext.artifactId
+                version project.version
 
                 pom {
                     name = project.name
@@ -130,10 +120,6 @@ subprojects { Project project ->
                             name = 'zhombie'
                         }
                     }
-                }
-
-                afterEvaluate {
-                    from components.release
                 }
             }
         }

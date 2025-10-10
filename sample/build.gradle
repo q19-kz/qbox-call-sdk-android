@@ -1,57 +1,51 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-
-    alias(libs.plugins.compose.compiler)
 }
 
 android {
     namespace = 'kz.qbox.call.sdk.sample'
 
-    compileSdk = 36
+    compileSdk 35
 
     defaultConfig {
-        applicationId = 'kz.qbox.call.sdk.sample'
+        applicationId 'kz.qbox.call.sdk.sample'
 
-        minSdk = 21
-        targetSdk = 36
+        minSdk 21
+        targetSdk 35
 
-        versionCode = project.ext.version_code
-        versionName = version
+        versionCode project.ext.version_code
+        versionName version
     }
 
     buildTypes {
         debug {
-            minifyEnabled = false
+            minifyEnabled false
 
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
     buildFeatures {
-        buildConfig = true
+        buildConfig true
         compose = true
     }
 
-    packagingOptions {
-        jniLibs {
-            useLegacyPackaging = true
-        }
-    }
-
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_19
+        targetCompatibility JavaVersion.VERSION_19
     }
 
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.15"
     }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_19.toString()
+    }
 }
 
 dependencies {
-    implementation(libs.kotlin.stdlib)
-
     implementation(libs.androidx.core.ktx)
 
     implementation(libs.androidx.activity.compose)
@@ -77,14 +71,4 @@ dependencies {
     implementation(project(":sdk"))
 
     debugImplementation(libs.leakcanary.android)
-}
-
-kotlin {
-    jvmToolchain(17)
-}
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
 }
