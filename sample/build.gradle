@@ -32,8 +32,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_19
-        targetCompatibility JavaVersion.VERSION_19
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     composeOptions {
@@ -41,7 +41,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_19.toString()
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
 }
 
@@ -65,8 +65,6 @@ dependencies {
     implementation(libs.audioswitch)
 
     implementation(libs.okhttp.logging.interceptor)
-
-//    implementation("com.github.q19-kz:qbox-call-sdk-android:1.0.9")
 
     implementation(project(":sdk"))
 
