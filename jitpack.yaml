@@ -1,6 +1,5 @@
 jdk:
-  - openjdk17
-  - openjdk21
+  - openjdk19
 before_install:
   - chmod +x gradlew
   - ./gradlew clean
