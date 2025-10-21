@@ -100,6 +100,9 @@ class SampleViewModel(
     fun onAudioOutputDeviceSelected(audioDevice: AudioDevice) =
         audioSwitch.selectDevice(audioDevice)
 
+    fun onCall(): Boolean =
+        callManager.onCall()
+
     fun onMute(): Boolean {
         audioManager?.isMicrophoneMute = true
         return if (audioManager?.isMicrophoneMute == true) {

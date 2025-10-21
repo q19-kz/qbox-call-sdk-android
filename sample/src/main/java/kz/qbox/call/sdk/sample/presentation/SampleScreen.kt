@@ -203,6 +203,15 @@ fun SampleScreen(
             Row {
                 TextButton(
                     onClick = {
+                        viewModel.onCall()
+                    }
+                ) {
+                    Text("Call")
+                }
+            }
+            Row {
+                TextButton(
+                    onClick = {
                         viewModel.onMute()
                     }
                 ) {

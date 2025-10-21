@@ -34,8 +34,8 @@ class CallManager(
     fun init(token: String) {
         Logger.debug(TAG, "init() -> token: $token")
         executorService.execute {
-            val isWebSocketRequested = connectToWebSocket(token)
-            Logger.debug(TAG, "init() -> isWebSocketRequested: $isWebSocketRequested")
+            val isWebSocketConnectRequested = connectToWebSocket(token)
+            Logger.debug(TAG, "init() -> isWebSocketConnectRequested: $isWebSocketConnectRequested")
         }
     }
 
@@ -59,6 +59,36 @@ class CallManager(
 
     fun getWebSocketClientState(): WebSocketClientState =
         WebSocketClient.webSocketClientState
+
+    fun onCall(): Boolean {
+        if (WebSocketClient.webSocketClientState != WebSocketClientState.Open) {
+            Logger.error(TAG, "onCall() -> WebSocket state: ${getWebSocketClientState()}")
+            return false
+        }
+
+        if (peerConnectionClient.peerConnectionClientState == PeerConnectionClientState.Created) {
+            Logger.error(TAG, "onCall() -> PeerConnection state: ${getPeerConnectionClientState()}")
+            return false
+        }
+
+        peerConnectionClient.createPeerConnection(
+            iceServers = iceServers,
+            listener = this
+        )
+
+        val isLocalMediaStreamCreated = peerConnectionClient.createLocalMediaStream()
+
+//            peerConnectionClient.addTransceiver(
+//                MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO,
+//                RtpTransceiver.RtpTransceiverInit(
+//                    RtpTransceiver.RtpTransceiverDirection.RECV_ONLY
+//                )
+//            )
+
+        peerConnectionClient.createOffer()
+
+        return isLocalMediaStreamCreated
+    }
 
     @Deprecated(
         "Use android.media.AudioManager#setMicrophoneMute(true)",
@@ -116,7 +146,7 @@ class CallManager(
                 override fun onFinish() {
                     Logger.debug(TAG, "CountDownTimer#onFinish()")
 
-                    listener?.onCallEvent(CallEvent.Hangup)
+                    listener?.onCallEvent(CallEvent.Hangup())
 
                     peerConnectionClient.dispose()
 
@@ -184,25 +214,6 @@ class CallManager(
         Logger.debug(TAG, "onWebSocketStateChange() -> state: $state")
 
         listener?.onWebSocketStateChange(state)
-
-        if (state == WebSocketClientState.Open) {
-            peerConnectionClient.createPeerConnection(
-                iceServers = iceServers,
-                listener = this
-            )
-
-            val isLocalMediaStreamCreated = peerConnectionClient.createLocalMediaStream()
-            Logger.debug(TAG, "isLocalMediaStreamCreated: $isLocalMediaStreamCreated")
-
-//            peerConnectionClient.addTransceiver(
-//                MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO,
-//                RtpTransceiver.RtpTransceiverInit(
-//                    RtpTransceiver.RtpTransceiverDirection.RECV_ONLY
-//                )
-//            )
-
-            peerConnectionClient.createOffer()
-        }
     }
 
     override fun onWebSocketMessage(message: JSONObject) {
@@ -239,7 +250,7 @@ class CallManager(
                 timer?.cancel()
                 timer = null
 
-                listener?.onCallEvent(CallEvent.Hangup)
+                listener?.onCallEvent(CallEvent.Hangup(message.optString("error")))
 
                 peerConnectionClient.dispose()
 
