@@ -8,7 +8,7 @@ accompanistPermissions = "0.37.3"
 leakcanary = "2.14"
 lifecycle = "2.9.4"
 okttp = "4.12.0"
-webrtc = "137.7151.04"
+webrtc = "144.7559.01"
 
 [libraries]
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
