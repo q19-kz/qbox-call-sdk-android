@@ -94,7 +94,11 @@ callManager.onDTMFButtonPressed(<symbol>)
 Включить/выключить микрофон
 
 ```kotlin
-callManager.onMute(), callManager.onUnmute()
+callManager.onMute()
+```
+
+```kotlin
+callManager.onUnmute()
 ```
 
 Завершение звонка
