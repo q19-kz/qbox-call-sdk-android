@@ -30,7 +30,7 @@ Manifest.permission.MODIFY_AUDIO_SETTINGS
 Manifest.permission.RECORD_AUDIO
 ```
 
-> Разрешения уже добавлены в `AndroidManifest.xml` библиотеки
+> Разрешения уже добавлены в [AndroidManifest.xml](https://github.com/q19-kz/qbox-call-sdk-android/blob/master/sdk/src/main/AndroidManifest.xml) библиотеки
 
 4. Передать конфигурационные настройки
 
@@ -47,7 +47,7 @@ QBoxSDK.init(
 https://<домен>/api/generate
 ```
 
-6. Объявить CallManager
+6. Объявить [CallManager](https://github.com/q19-kz/qbox-call-sdk-android/blob/master/sdk/src/main/java/kz/qbox/call/sdk/CallManager.kt)
 
 ```kotlin
 CallManager(
@@ -62,14 +62,20 @@ CallManager(
   listener = this
 )
 ```
-            
-7. Инициализировать CallManager (подключение к WebSocket)
+
+7. Реализовать методы [CallManager.Listener](https://github.com/q19-kz/qbox-call-sdk-android/blob/master/sdk/src/main/java/kz/qbox/call/sdk/CallManager.kt) для получений информации о происходящих событиях в звонке (опционально)
+
+  - `onCallEvent`
+  - `onWebSocketStateChange`
+  - `onWebRTCPeerConnectionChange`
+
+8. Инициализировать [CallManager](https://github.com/q19-kz/qbox-call-sdk-android/blob/master/sdk/src/main/java/kz/qbox/call/sdk/CallManager.kt) (подключение к WebSocket)
 
 ```kotlin
 callManager.init(token = token)
 ```
 
-8. Совершить исходящий звонок
+9. Совершить исходящий звонок
 
 ```kotlin
 callManager.onCall()
