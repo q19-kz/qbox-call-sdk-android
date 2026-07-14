@@ -1,6 +1,6 @@
 ## Инструкция
 
-Добавить репозиторий в родительский `build.gradle`
+1. Добавить репозиторий в родительский `build.gradle`
 
 ```gradle
 dependencyResolutionManagement {
@@ -12,7 +12,7 @@ dependencyResolutionManagement {
 }
 ```
 
-Добавить зависимость
+2. Добавить зависимость
 
 ```gradle
 dependencies {
@@ -20,7 +20,7 @@ dependencies {
 }
 ```
 
-Требуемые разрешения
+3. Требуемые разрешения
 
 ```
 Manifest.permission.MODIFY_AUDIO_SETTINGS
@@ -29,17 +29,7 @@ Manifest.permission.RECORD_AUDIO
 
 > Разрешения добавлены в `AndroidManifest.xml` библиотеки
 
-## Пример
-
-Ссылка
-
-```
-https://github.com/q19-kz/qbox-call-sdk-android/tree/master/sample
-```
-
-#### Инструкция
-
-Передать конфигурационные настройки
+4. Передать конфигурационные настройки
 
 ```kotlin
 QBoxSDK.init(
@@ -48,13 +38,13 @@ QBoxSDK.init(
 )
 ```
 
-Сгенерировать token
+5. Сгенерировать token
 
 ```
 https://<домен>/api/generate
 ```
 
-Объявить CallManager
+6. Объявить CallManager
 
 ```kotlin
 CallManager(
@@ -70,11 +60,13 @@ CallManager(
 )
 ```
             
-Инициализировать CallManager
+7. Инициализировать CallManager
 
 ```kotlin
 callManager.init(token = token)
 ```
+
+---
 
 Прочее
 
