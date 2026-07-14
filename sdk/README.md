@@ -77,7 +77,7 @@ callManager.onCall()
 
 ---
 
-Прочее
+## Прочее
 
 Передача DTMF команды
 
@@ -97,15 +97,19 @@ callManager.onMute(), callManager.onUnmute()
 callManager.onHangup()
 ```
 
-Управление аудиовыходами
+---
 
-Рекомендация:
+## Управление аудиовыходами
+
+Рекомендация
 
 ```
 https://github.com/twilio/audioswitch
 ```
 
-Зависимости библиотеки
+---
+
+## Зависимости библиотеки
 
 1. https://square.github.io/okhttp/, версия 4.12.0
 2. https://github.com/webrtc-sdk/android, версия 137.7151.04
