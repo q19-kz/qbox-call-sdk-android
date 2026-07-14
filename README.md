@@ -12,4 +12,4 @@ See the [Migration Guide](sdk/MIGRATION.md) for the complete breaking changes li
 ### Tutorial
 
 - Sample: [link](sample)
-- Docs: [link][sdk/README.md]
+- Docs: [link](sdk/README.md)
