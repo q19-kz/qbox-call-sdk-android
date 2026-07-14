@@ -63,7 +63,7 @@ CallManager(
 )
 ```
 
-7. Реализовать методы [CallManager.Listener](https://github.com/q19-kz/qbox-call-sdk-android/blob/master/sdk/src/main/java/kz/qbox/call/sdk/CallManager.kt) для получений информации о происходящих событиях в звонке (опционально)
+7. Реализовать методы [CallManager.Listener](https://github.com/q19-kz/qbox-call-sdk-android/blob/master/sdk/src/main/java/kz/qbox/call/sdk/CallManager.kt) для получений информации о [происходящих событиях](https://github.com/q19-kz/qbox-call-sdk-android/blob/master/sdk/src/main/java/kz/qbox/call/sdk/CallEvent.kt) в звонке (опционально)
 
   - `onCallEvent`
   - `onWebSocketStateChange`
