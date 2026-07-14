@@ -24,10 +24,13 @@ dependencies {
 
 ```
 Manifest.permission.MODIFY_AUDIO_SETTINGS
+```
+
+```
 Manifest.permission.RECORD_AUDIO
 ```
 
-> Разрешения добавлены в `AndroidManifest.xml` библиотеки
+> Разрешения уже добавлены в `AndroidManifest.xml` библиотеки
 
 4. Передать конфигурационные настройки
 
@@ -60,10 +63,16 @@ CallManager(
 )
 ```
             
-7. Инициализировать CallManager
+7. Инициализировать CallManager (подключение к WebSocket)
 
 ```kotlin
 callManager.init(token = token)
+```
+
+8. Совершить исходящий звонок
+
+```kotlin
+callManager.onCall()
 ```
 
 ---
