@@ -1,6 +1,6 @@
 # qbox-call-sdk-android
 
-## Versions
+## Version
 
 [![](https://jitpack.io/v/q19-kz/qbox-call-sdk-android.svg)](https://jitpack.io/#q19-kz/qbox-call-sdk-android)
 
@@ -9,6 +9,7 @@ See the [Migration Guide](sdk/MIGRATION.md) for the complete breaking changes li
 
 [CHANGELOG](sdk/CHANGELOG.md)
 
-### Examples
+### Tutorial
 
-- sample: [link](sample)
+- Sample: [link](sample)
+- Docs: [link][sdk/README.md]
